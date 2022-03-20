@@ -1,10 +1,10 @@
 import React, {FC, ReactNode} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   useColorScheme,
+  View,
 } from 'react-native';
 import {Colors} from '../style';
 
@@ -22,12 +22,7 @@ export const Layout: FC<ILayout> = ({children}) => {
   return (
     <SafeAreaView style={[styles.safeArea, backgroundStyle]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollContainer}
-        style={backgroundStyle}>
-        {children}
-      </ScrollView>
+      <View style={[backgroundStyle, styles.scrollContainer]}>{children}</View>
     </SafeAreaView>
   );
 };

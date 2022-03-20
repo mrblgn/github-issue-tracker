@@ -1,17 +1,16 @@
-import React, {FC} from 'react';
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {HomeScreen} from '../views';
+import {HomeScreen, IssuesScreen} from '../views';
 
-interface INavigation {}
+const Stack = createNativeStackNavigator<StackParamList>();
 
-const Stack = createNativeStackNavigator();
-
-export const Navigation: FC<INavigation> = () => (
+export const Navigation = () => (
   <NavigationContainer>
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Issues" component={IssuesScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );

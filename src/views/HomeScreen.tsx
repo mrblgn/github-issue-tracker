@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {FC, useContext, useState} from 'react';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {
   StyleSheet,
@@ -10,19 +11,29 @@ import {
 import {requestIssues} from '../utils';
 
 import {Layout} from '../components';
+import {GlobalContext} from '../context';
 import {Colors} from '../style';
 
-export const HomeScreen = () => {
+type HomeProps = NativeStackScreenProps<StackParamList, 'Home'>;
+
+export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
+  const {setIssues, setLoading} = useContext(GlobalContext);
   const [owner, onChangeOwner] = useState<string>('');
   const [repo, onChangeRepo] = useState<string>('');
 
   const searchHandler = async () => {
-    if (owner && repo) {
+    if (owner && repo && setIssues) {
+      setLoading!(true);
       await requestIssues(owner, repo)
-        .then(response => {
-          console.log(response.data[0]);
+        .then(response => setIssues(response))
+        .then(() => {
+          navigate('Issues');
+          setLoading!(false);
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+          console.log(e);
+          setLoading!(false);
+        });
     }
   };
 
@@ -41,11 +52,13 @@ export const HomeScreen = () => {
           style={styles.input}
           onChangeText={onChangeOwner}
           value={owner}
+          autoCapitalize="none"
           placeholder="Github Repo Owner"
         />
         <TextInput
           style={styles.input}
           onChangeText={onChangeRepo}
+          autoCapitalize="none"
           value={repo}
           placeholder="Github Repo"
         />
