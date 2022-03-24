@@ -24,14 +24,18 @@ const Item: FC<TItem> = ({title, onPress}) => {
 };
 
 type TState = 'all' | 'open' | 'closed';
+type TRenderItem = {item: IGithubIssue};
 
 const States: TState[] = ['all', 'open', 'closed'];
 
-export const IssuesScreen: FC<IssuesProps> = () => {
-  const {issues} = useContext(GlobalContext);
+export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
+  const {issues, setSelectedIssue} = useContext(GlobalContext);
   const [state, setState] = useState<TState>('all');
-  const onPress = (item: any) => console.log(item.state);
-  const renderItem = ({item}: any) => (
+  const onPress = (item: IGithubIssue) => {
+    setSelectedIssue!(item);
+    navigate('Details');
+  };
+  const renderItem = ({item}: TRenderItem) => (
     <Item title={item.title} onPress={() => onPress(item)} />
   );
   return (
@@ -48,11 +52,13 @@ export const IssuesScreen: FC<IssuesProps> = () => {
         ))}
       </View>
       <FlatList
-        data={issues.data.filter(
-          (issue: any) => state === 'all' || issue.state === state,
-        )}
+        data={
+          issues.data.filter(
+            (issue: IGithubIssue) => state === 'all' || issue.state === state,
+          ) as IGithubIssue[]
+        }
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, index) => `${item.id} ${index}`}
         showsVerticalScrollIndicator={false}
       />
     </Layout>
