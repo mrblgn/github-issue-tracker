@@ -1,5 +1,6 @@
 import {
   SET_LOADING,
+  SET_SEARCH_PARAMS,
   SET_ISSUES,
   SET_SELECTED_ISSUE,
   TOGGLE_BOOKMARK_ISSUE,
@@ -12,6 +13,11 @@ export const appReducer = (state: TState, action: ActionType) => {
         ...state,
         loading: action.payload,
       };
+    case SET_SEARCH_PARAMS:
+      return {
+        ...state,
+        searchParams: action.payload,
+      };
     case SET_ISSUES:
       return {
         ...state,
@@ -23,10 +29,12 @@ export const appReducer = (state: TState, action: ActionType) => {
         selected: action.payload,
       };
     case TOGGLE_BOOKMARK_ISSUE:
-      const hasBookmark = state.bookmarked?.includes(action.payload);
+      const hasBookmark = state.bookmarked
+        ?.map(issue => issue.id)
+        .includes(action.payload.id);
       const bookmarked = hasBookmark
-        ? state.bookmarked?.splice(state.bookmarked?.indexOf(action.payload), 0)
-        : state.bookmarked
+        ? state.bookmarked?.filter(issue => issue.id !== action.payload.id)
+        : state.bookmarked && state.bookmarked?.length
         ? [...state.bookmarked, action.payload]
         : [action.payload];
       return {

@@ -1,36 +1,26 @@
-import React, {FC, useContext, useState} from 'react';
+import React, {FC, useContext, useEffect} from 'react';
 import {Text, FlatList, View, StyleSheet, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import {Layout} from '../components';
+import {Item, Layout} from '../components';
 import {GlobalContext} from '../context';
-import {Colors} from '../style';
+import {capitalize, requestIssues} from '../utils';
 
 type IssuesProps = NativeStackScreenProps<StackParamList, 'Issues'>;
 
-type TItem = {
-  title: string;
-  onPress: () => void;
-};
-
-const Item: FC<TItem> = ({title, onPress}) => {
-  return (
-    <Pressable {...{onPress}}>
-      <View style={styles.item}>
-        <Text style={styles.itemText}>{title}</Text>
-      </View>
-    </Pressable>
-  );
-};
-
-type TState = 'all' | 'open' | 'closed';
 type TRenderItem = {item: IGithubIssue};
 
-const States: TState[] = ['all', 'open', 'closed'];
+const States: TIssueState[] = ['all', 'open', 'closed'];
 
 export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
-  const {issues, setSelectedIssue} = useContext(GlobalContext);
-  const [state, setState] = useState<TState>('all');
+  const {
+    issues,
+    setSelectedIssue,
+    setLoading,
+    setIssues,
+    searchParams,
+    setSearchParams,
+  } = useContext(GlobalContext);
   const onPress = (item: IGithubIssue) => {
     setSelectedIssue!(item);
     navigate('Details');
@@ -38,25 +28,47 @@ export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
   const renderItem = ({item}: TRenderItem) => (
     <Item title={item.title} onPress={() => onPress(item)} />
   );
+  const header = searchParams
+    ? `${capitalize(searchParams.state)} Issues for ${capitalize(
+        searchParams.repo,
+      )}`
+    : 'Issues';
+  useEffect(() => {
+    if (searchParams && setIssues) {
+      setLoading!(true);
+      const {owner, repo, perPage, page, state} = searchParams;
+      requestIssues(owner, repo, perPage, page, state)
+        .then(response => {
+          setLoading!(false);
+          setIssues(response);
+        })
+        .catch(e => {
+          console.log(e);
+          setLoading!(false);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   return (
     <Layout>
+      <Text style={styles.header}>{header}</Text>
       <View style={styles.stateBox}>
-        {States.map((_state: TState) => (
+        {States.map((_state: TIssueState) => (
           <Pressable
-            onPress={() => setState(_state)}
-            style={_state === state ? styles.boxItemSelected : styles.boxItem}>
-            <Text style={styles.boxItemText}>
-              {_state.charAt(0).toUpperCase() + _state.slice(1)}
-            </Text>
+            key={_state}
+            onPress={() => setSearchParams!({...searchParams!, state: _state})}
+            style={
+              _state === searchParams!.state
+                ? styles.boxItemSelected
+                : styles.boxItem
+            }>
+            <Text style={styles.boxItemText}>{capitalize(_state)}</Text>
           </Pressable>
         ))}
       </View>
       <FlatList
-        data={
-          issues.data.filter(
-            (issue: IGithubIssue) => state === 'all' || issue.state === state,
-          ) as IGithubIssue[]
-        }
+        data={issues.data}
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id} ${index}`}
         showsVerticalScrollIndicator={false}
@@ -66,15 +78,11 @@ export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
 };
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: Colors.White,
-    marginTop: 6,
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-  },
-  itemText: {
-    fontSize: 15,
-    lineHeight: 22,
+  header: {
+    fontSize: 24,
+    lineHeight: 36,
+    fontWeight: '500',
+    marginBottom: 12,
   },
   stateBox: {
     backgroundColor: '#ffffff',

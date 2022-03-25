@@ -2,6 +2,7 @@ import React, {FC, useContext} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 import {Layout} from '../components';
 import {GlobalContext} from '../context';
@@ -11,17 +12,33 @@ type IssueDetailsProps = NativeStackScreenProps<StackParamList, 'Details'>;
 
 export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
   const {selected, bookmarked, toggleBookmark} = useContext(GlobalContext);
-  const bookmarkHandler = () => selected && toggleBookmark!(selected.id);
+  const bookmarkHandler = () => selected && toggleBookmark!(selected);
   return (
     <Layout>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}
+        style={styles.scroll}
         contentContainerStyle={styles.scrollContainer}>
-        <Text>{selected?.body}</Text>
+        <Markdown>{selected?.body}</Markdown>
       </ScrollView>
-      <TouchableOpacity style={styles.button} onPress={bookmarkHandler}>
-        <Text style={styles.buttonText}>
-          {selected && bookmarked?.includes(selected?.id)
+      <TouchableOpacity
+        style={
+          selected &&
+          bookmarked?.filter(issue => issue.id === selected.id).length
+            ? styles.buttonSecondary
+            : styles.button
+        }
+        onPress={bookmarkHandler}>
+        <Text
+          style={
+            selected &&
+            bookmarked?.filter(issue => issue.id === selected.id).length
+              ? styles.buttonSecondaryText
+              : styles.buttonText
+          }>
+          {selected &&
+          bookmarked?.filter(issue => issue.id === selected.id).length
             ? 'Unbookmark'
             : 'Bookmark'}
         </Text>
@@ -37,8 +54,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.ButtonBg,
     padding: 10,
   },
+  buttonSecondary: {
+    alignItems: 'center',
+    borderRadius: 12,
+    backgroundColor: Colors.White,
+    borderColor: Colors.ButtonBg,
+    borderWidth: 1,
+    padding: 10,
+  },
   buttonText: {
     color: Colors.ButtonText,
+    fontSize: 15,
+  },
+  buttonSecondaryText: {
+    color: Colors.Black,
     fontSize: 15,
   },
   container: {
@@ -59,8 +88,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
+  scroll: {
+    marginBottom: 12,
+  },
   scrollContainer: {
-    flex: 1,
+    flexGrow: 1,
   },
   welcome: {
     fontSize: 36,

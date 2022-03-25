@@ -3,12 +3,20 @@ import {appReducer} from './reducers';
 import {
   SET_ISSUES,
   SET_LOADING,
+  SET_SEARCH_PARAMS,
   SET_SELECTED_ISSUE,
   TOGGLE_BOOKMARK_ISSUE,
 } from './types';
 
 const initialState: TState = {
   loading: false,
+  searchParams: {
+    owner: '',
+    repo: '',
+    perPage: 50,
+    page: 1,
+    state: 'all',
+  },
 };
 
 export const GlobalContext =
@@ -24,6 +32,10 @@ export const GlobalProvider: FC<{children: Element | Element[]}> = ({
     dispatch({type: SET_LOADING, payload: loading});
   };
 
+  const setSearchParams = (params: TSearchParams) => {
+    dispatch({type: SET_SEARCH_PARAMS, payload: params});
+  };
+
   const setIssues = (issues: IssueResponse) => {
     dispatch({type: SET_ISSUES, payload: issues});
   };
@@ -32,8 +44,8 @@ export const GlobalProvider: FC<{children: Element | Element[]}> = ({
     dispatch({type: SET_SELECTED_ISSUE, payload: issue});
   };
 
-  const toggleBookmark = (issueId: number) => {
-    dispatch({type: TOGGLE_BOOKMARK_ISSUE, payload: issueId});
+  const toggleBookmark = (issue: IGithubIssue) => {
+    dispatch({type: TOGGLE_BOOKMARK_ISSUE, payload: issue});
   };
 
   return (
@@ -41,6 +53,7 @@ export const GlobalProvider: FC<{children: Element | Element[]}> = ({
       value={{
         ...state,
         setLoading,
+        setSearchParams,
         setIssues,
         setSelectedIssue,
         toggleBookmark,

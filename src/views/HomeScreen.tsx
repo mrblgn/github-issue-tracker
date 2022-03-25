@@ -17,14 +17,17 @@ import {Colors} from '../style';
 type HomeProps = NativeStackScreenProps<StackParamList, 'Home'>;
 
 export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
-  const {setIssues, setLoading} = useContext(GlobalContext);
+  const {setIssues, setLoading, searchParams, setSearchParams} =
+    useContext(GlobalContext);
   const [owner, onChangeOwner] = useState<string>('');
   const [repo, onChangeRepo] = useState<string>('');
 
   const searchHandler = async () => {
-    if (owner && repo && setIssues) {
+    if (owner && repo && searchParams && setIssues) {
       setLoading!(true);
-      await requestIssues(owner, repo)
+      const {perPage, page, state} = searchParams;
+      setSearchParams!({...searchParams, owner, repo});
+      await requestIssues(owner, repo, perPage, page, state)
         .then(response => setIssues(response))
         .then(() => {
           navigate('Issues');
