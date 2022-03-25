@@ -15,6 +15,7 @@ export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
   const bookmarkHandler = () => selected && toggleBookmark!(selected);
   return (
     <Layout>
+      <Text style={styles.header}>{selected?.title}</Text>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
@@ -87,6 +88,12 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  header: {
+    fontSize: 24,
+    lineHeight: 36,
+    fontWeight: '500',
+    marginBottom: 12,
   },
   scroll: {
     marginBottom: 12,

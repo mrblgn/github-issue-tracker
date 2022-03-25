@@ -5,6 +5,7 @@ export const Colors = {
   ButtonBg: '#151515',
   ButtonText: '#ffffff',
   Black: '#000000',
+  Black05: '#00000080',
   White: '#ffffff',
   Red: '#ef233c',
   RedDark: '#d90429',

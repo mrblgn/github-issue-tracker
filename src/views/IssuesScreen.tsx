@@ -2,9 +2,10 @@ import React, {FC, useContext, useEffect} from 'react';
 import {Text, FlatList, View, StyleSheet, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import {Item, Layout} from '../components';
+import {Item, Layout, Pagination} from '../components';
 import {GlobalContext} from '../context';
 import {capitalize, requestIssues} from '../utils';
+import {Colors} from '../style';
 
 type IssuesProps = NativeStackScreenProps<StackParamList, 'Issues'>;
 
@@ -33,6 +34,9 @@ export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
         searchParams.repo,
       )}`
     : 'Issues';
+  const onPageChange = (page: number) =>
+    setSearchParams!({...searchParams!, page});
+
   useEffect(() => {
     if (searchParams && setIssues) {
       setLoading!(true);
@@ -49,7 +53,6 @@ export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-
   return (
     <Layout>
       <Text style={styles.header}>{header}</Text>
@@ -72,6 +75,9 @@ export const IssuesScreen: FC<IssuesProps> = ({navigation: {navigate}}) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id} ${index}`}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <Pagination page={searchParams!.page} {...{onPageChange}} />
+        }
       />
     </Layout>
   );
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   stateBox: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.White,
     height: 32,
     flexDirection: 'row',
     marginBottom: 6,
@@ -94,13 +100,14 @@ const styles = StyleSheet.create({
   },
   boxItem: {
     alignItems: 'center',
-    backgroundColor: '#eeeeee',
+    backgroundColor: Colors.BackgroundLight,
+    borderRadius: 3,
     flex: 1,
     justifyContent: 'center',
     margin: 1,
   },
   boxItemSelected: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.White,
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,

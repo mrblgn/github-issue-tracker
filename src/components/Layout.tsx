@@ -1,4 +1,4 @@
-import React, {FC, ReactNode} from 'react';
+import React, {FC, ReactNode, useContext} from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -6,12 +6,15 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {GlobalContext} from '../context';
 import {Colors} from '../style';
+import {Loading} from './Loading';
 
 interface ILayout {
   children: ReactNode;
 }
 export const Layout: FC<ILayout> = ({children}) => {
+  const {loading} = useContext(GlobalContext);
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -23,6 +26,7 @@ export const Layout: FC<ILayout> = ({children}) => {
     <SafeAreaView style={[styles.safeArea, backgroundStyle]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <View style={[backgroundStyle, styles.scrollContainer]}>{children}</View>
+      <Loading visible={!!loading} />
     </SafeAreaView>
   );
 };
