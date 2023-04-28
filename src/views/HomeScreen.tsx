@@ -29,7 +29,7 @@ export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
       if (setSearchParams) {
         setSearchParams({...searchParams!, owner, repo});
       }
-      await requestIssues(owner, repo, perPage, page, state)
+      await requestIssues(owner.trim(), repo.trim(), perPage, page, state)
         .then(response => setIssues!(response))
         .then(() => {
           navigate('Issues');
