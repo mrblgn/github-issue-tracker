@@ -23,12 +23,14 @@ export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
   const [repo, onChangeRepo] = useState<string>('');
 
   const searchHandler = async () => {
-    if (owner && repo && searchParams && setIssues) {
+    if (owner && repo) {
       setLoading!(true);
-      const {perPage, page, state} = searchParams;
-      setSearchParams!({...searchParams, owner, repo});
+      const {perPage, page, state} = searchParams!;
+      if (setSearchParams) {
+        setSearchParams({...searchParams!, owner, repo});
+      }
       await requestIssues(owner, repo, perPage, page, state)
-        .then(response => setIssues(response))
+        .then(response => setIssues!(response))
         .then(() => {
           navigate('Issues');
           setLoading!(false);
@@ -52,6 +54,7 @@ export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
           }
         </Text>
         <TextInput
+          testID="ownerInput"
           style={styles.input}
           onChangeText={onChangeOwner}
           value={owner}
@@ -59,6 +62,7 @@ export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
           placeholder="Github Repo Owner"
         />
         <TextInput
+          testID="repoInput"
           style={styles.input}
           onChangeText={onChangeRepo}
           autoCapitalize="none"
@@ -66,7 +70,10 @@ export const HomeScreen: FC<HomeProps> = ({navigation: {navigate}}) => {
           placeholder="Github Repo"
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={searchHandler}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={searchHandler}
+        testID="searchButton">
         <Text style={styles.buttonText}>Search</Text>
       </TouchableOpacity>
     </Layout>
