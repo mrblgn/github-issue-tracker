@@ -1,17 +1,23 @@
-import React, {FC, useContext} from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, { FC, useContext } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import Markdown from 'react-native-markdown-display';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+// import Markdown from 'react-native-markdown-display';
 
-import {Layout} from '../components';
-import {GlobalContext} from '../context';
-import {Colors} from '../style';
+import { Layout } from '../components';
+import { GlobalContext } from '../context';
+import { Colors } from '../style';
 
 type IssueDetailsProps = NativeStackScreenProps<StackParamList, 'Details'>;
 
 export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
-  const {selected, bookmarked, toggleBookmark} = useContext(GlobalContext);
+  const { selected, bookmarked, toggleBookmark } = useContext(GlobalContext);
   const bookmarkHandler = () => selected && toggleBookmark!(selected);
   return (
     <Layout>
@@ -20,8 +26,13 @@ export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContainer}>
-        <Markdown>{selected?.body}</Markdown>
+        contentContainerStyle={styles.scrollContainer}
+      >
+        <View>
+          <Text>selected?.body</Text>
+        </View>
+
+        {/* <Markdown>{selected?.body}</Markdown> */}
       </ScrollView>
       <TouchableOpacity
         style={
@@ -30,14 +41,16 @@ export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
             ? styles.buttonSecondary
             : styles.button
         }
-        onPress={bookmarkHandler}>
+        onPress={bookmarkHandler}
+      >
         <Text
           style={
             selected &&
             bookmarked?.filter(issue => issue.id === selected.id).length
               ? styles.buttonSecondaryText
               : styles.buttonText
-          }>
+          }
+        >
           {selected &&
           bookmarked?.filter(issue => issue.id === selected.id).length
             ? 'Unbookmark'
