@@ -1,14 +1,13 @@
 import React, { FC, useContext } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  Linking,
 } from 'react-native';
-// import Markdown from 'react-native-markdown-display';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { EnrichedMarkdownText } from 'react-native-enriched-markdown';
 
 import { Layout } from '../components';
 import { GlobalContext } from '../context';
@@ -28,11 +27,12 @@ export const IssueDetailsScreen: FC<IssueDetailsProps> = () => {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContainer}
       >
-        <View>
-          <Text>selected?.body</Text>
-        </View>
-
-        {/* <Markdown>{selected?.body}</Markdown> */}
+        {selected?.body ? (
+          <EnrichedMarkdownText
+            markdown={selected?.body}
+            onLinkPress={({ url }) => Linking.openURL(url)}
+          />
+        ) : undefined}
       </ScrollView>
       <TouchableOpacity
         style={
